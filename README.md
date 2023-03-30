@@ -27,6 +27,7 @@ freetests.py is LICENSE'D under a BSD-like license:
 From ws4py
 
 Copyright (c) 2011-2014, Sylvain Hellegouarch, Abram Hindle
+Copyright (c) 2023, Alex Mak
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -59,3 +60,23 @@ Contributors
 * Mark Galloway
 * Abram Hindle
 * Cole Mackenzie
+* Alex Mak
+
+Collabortators/ sources used
+============
+* I did not collaborate with anyone for this assignment.
+* WebSockets Classroom examples:
+
+https://github.com/abramhindle/WebSocketsExamples/blob/master/broadcaster.py
+
+https://github.com/abramhindle/WebSocketsExamples/blob/master/static/broadcast.html
+* My(Alex Mak's work on assignment 4-Ajax)
+
+https://github.com/Alex-Mak-MCW/CMPUT404-assignment4-ajax/blob/master/server.py
+
+https://github.com/Alex-Mak-MCW/CMPUT404-assignment4-ajax/blob/master/static/index.html
+* External sources:
+
+Send POST data using XMLHttpRequest, Ed Heal and rkachach, https://stackoverflow.com/questions/9713058/send-post-data-using-xmlhttprequest, CC BY-SA 4.0
+
+websocket.send() parameter, pRaNaY and pimvdb, https://stackoverflow.com/questions/11181577/websocket-send-parameter, CC BY-SA 4.0
