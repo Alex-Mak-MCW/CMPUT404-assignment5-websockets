@@ -47,15 +47,22 @@ world = {};
 //XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
-        beginPath();                
-        lineWidth = 3;
+        beginPath();     
+        
+        // learned from my assignment 4 and reused my design on it
+        context.setLineDash([3, 5]);
+        lineWidth = 10;
         var x = entity["x"];
         var y = entity["y"];
-        //moveTo(x,y);
+
+        // Added different color randomly for every draw
+        var colorList = ["red", 'yellow', 'blue', 'orange', 'purple', 'green', 'pink', 'grey', 'white', 'violet'];
+        entity["colour"] = colorList[Math.floor(Math.random() * 10)];
+
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
-        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
-        stroke();                                
+        arc(x, y, (entity["radius"]) ? entity["radius"] : 100, 0, 2.0 * Math.PI, false);
+        stroke();     
     }
 }
 
@@ -125,6 +132,19 @@ function addEntity(entity, data) {
     world[entity] = data;
     drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just modified!
+
+    // assign new entity and its data (just like above)
+    let newEntity={};
+    newEntity[entity]=data;
+
+    // socket send JSON, learned from the source below
+    // Source Title: websocket.send() parameter
+    // Source Type: Website(StackOverflow)
+    // Source author and editor: pRaNaY(URL: https://stackoverflow.com/users/2949612/pranay), pimvdb (URL: https://stackoverflow.com/users/514749/pimvdb)
+    // Source License: CC BY - SA 4.0
+    // Latest date contributed: August 10th, 2018
+    // Resource URI: https://stackoverflow.com/questions/11181577/websocket-send-parameter
+    socket.send(JSON.stringify(newEntity))
 }
 var counter = 0;
 function addEntityWithoutName(data) {
@@ -230,17 +250,24 @@ mouse = (function() {
 
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
-mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+
+// learned from my assignment 4 and reused my design on it
+var colorList = ["red", 'yellow', 'blue', 'orange', 'purple', 'green', 'pink', 'grey', 'white', 'violet'];
+
+var color1 = colorList[Math.floor(Math.random() * 10)];
+var color2 = colorList[Math.floor(Math.random() * 10)];
+var color3 = colorList[Math.floor(Math.random() * 10)];
+
+mouse.mousedowners.push(function (x, y, clicked, e) {
+    addEntityWithoutName({ 'x': x, 'y': y, 'colour': color1, 'radius': 60 });
 });
 
-mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+mouse.mouseuppers.push(function (x, y, clicked, e) {
+    addEntityWithoutName({ 'x': x, 'y': y, 'colour': color2, 'radius': 85 });
 });
 
-mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
-                          'radius':10});
+mouse.mousedraggers.push(function (x, y, clicked, e) {
+    addEntityWithoutName({ 'x': x, 'y': y, 'colour': color3, 'radius': 35 });
 });
 
 
@@ -254,14 +281,57 @@ function wsSetup() {
     socket = new WebSocket(url);
     socket.onopen = function() {
         //XXX: TODO What are you going to do here?
+        // learned from my own assignment 4 work
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                try {
+                    if (xhr.status == 200) {
+                        //XXX: parse some JSON from the request!
+                        // use json.parse to parse JSON text into an object
+                        let requestJson = JSON.parse(xhr.responseText)
+                        //XXX: Pass the data to the callback!
+                        // callback(requestJson;
+                    }
+                }
+                catch (e) {
+                    alert('Error: ' + e.name);
+                }
+            }
+        }
+        // I have learned from the source below to open and send XHTML request.
+
+        // Source Title: Send POST data using XMLHttpRequest
+        // Source Type: Website(StackOverflow)
+        // Source author and editor: Ed Heal(URL: https://stackoverflow.com/users/892256/ed-heal), rkachach (URL: https://stackoverflow.com/users/1313233/rkachach)
+        // Source License: CC BY-SA 4.0
+        // Latest date contributed: October 6th, 2020
+        // Resource URI: https://stackoverflow.com/questions/9713058/send-post-data-using-xmlhttprequest
+
+        xhr.open('GET', '/world', true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("Accept", "application/json");
+        xhr.send('');
     };
     socket.onerror = function(msg) {
-        debug("WebSocket Error:" + msg.data);
+        debug("WebSocket Error (testing):" + msg.data);
     };
     socket.onmessage = function(msg) {  
         try {
             debug("WebSocket Recv:" + msg.data);
-            //XXX: TODO What are you going to do here?            
+            //XXX: TODO What are you going to do here?   
+            
+            // Learned from websocket classroom example:
+            // https://github.com/abramhindle/WebSocketsExamples/blob/master/static/broadcast.html
+            // add message function
+
+            var data=JSON.parse(msg.data)
+            // use a for loop to add the message part to the world
+            for (var entity in data){
+                world[entity]=data[entity];
+            };
+            // draw the frame
+            drawNextFrame()
         } catch (e) {
             alert("socket on message: " + e);
         }
